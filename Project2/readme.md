@@ -23,6 +23,7 @@ To start the RMI server, execute the following command:
 java server.RMIServer
 ```
 This will start the RMI server, and you should see a message indicating that the server is running and that the KeyValueService is bound.
+
 3. **Running the RMI Client**:
 Open a new terminal window and navigate to the src directory again. To run the RMI client, use the following command:
 ```bash
