@@ -50,3 +50,6 @@ java -cp bin client.RMIClient localhost 1099
 ```bash
 exit
 ```
+
+## Example output
+![Example Output](https://github.com/RebeccaYHZ/RMIKeyValueProcess/blob/main/Example%20Output.png)
