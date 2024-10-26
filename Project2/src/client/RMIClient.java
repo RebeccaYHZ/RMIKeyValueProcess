@@ -30,13 +30,13 @@ public class RMIClient {
             Registry registry = LocateRegistry.getRegistry("localhost", 1099);
             keyValueService = (KeyValueService) registry.lookup("KeyValueService");
 
-            String[] commands = {"PUT", "GET", "DELETE"};
+            String[] commands = { "PUT", "GET", "DELETE" };
             String[][] keyValues = {
-                    {"6650", "fall"},
-                    {"3450", "spring"},
-                    {"5520", "summer"},
-                    {"5100", "winter"},
-                    {"5200", "fall"}
+                    { "6650", "fall" },
+                    { "3450", "spring" },
+                    { "5520", "summer" },
+                    { "5100", "winter" },
+                    { "5200", "fall" }
             };
 
             for (String[] kv : keyValues) {
@@ -56,24 +56,22 @@ public class RMIClient {
                 executorService.submit(() -> sendRequest(command));
             }
 
-            // Handle user input in a separate thread
-            executorService.submit(RMIClient::handleUserInput);
+            // Shutdown the executor service gracefully and wait for tasks to finish
+            executorService.shutdown();
+            if (!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
+                executorService.shutdownNow();
+            }
+
+            // Handle user input in the main thread after all tasks are completed
+            handleUserInput();
 
         } catch (NotBoundException e) {
             throw new RuntimeException(e);
         } catch (RemoteException e) {
             LOGGER.severe("Remote Exception: " + e.getMessage());
-        } finally {
-            // Shutdown the executor service gracefully
-            executorService.shutdown();
-            try {
-                if (!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
-                    executorService.shutdownNow();
-                }
-            } catch (InterruptedException e) {
-                executorService.shutdownNow();
-                Thread.currentThread().interrupt();
-            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            LOGGER.severe("Interrupted Exception: " + e.getMessage());
         }
     }
 
